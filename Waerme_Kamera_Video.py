@@ -9,6 +9,15 @@ import adafruit_mlx90640
 import matplotlib.pyplot as plt
 from scipy import ndimage
 
+import time
+import uuid
+#from PIL import image
+from skimage import io
+import numpy as np
+
+# Create an empty list to store images
+img_list = []
+
 i2c = busio.I2C(board.SCL, board.SDA, frequency=400000) # setup I2C
 mlx = adafruit_mlx90640.MLX90640(i2c) # begin MLX90640 with I2C comm
 mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_16_HZ # set refresh rate
@@ -31,7 +40,8 @@ ax_background = fig.canvas.copy_from_bbox(ax.bbox) # copy background
 fig.show() # show the figure before blitting
 
 frame = np.zeros(mlx_shape[0]*mlx_shape[1]) # 768 pts
-def plot_update():
+
+def plot_update(img_list):
     fig.canvas.restore_region(ax_background) # restore background
     mlx.getFrame(frame) # read mlx90640
     data_array = np.fliplr(np.reshape(frame,mlx_shape)) # reshape, flip data
@@ -40,16 +50,22 @@ def plot_update():
     therm1.set_clim(vmin=np.min(data_array),vmax=np.max(data_array)) # set bounds
     cbar.on_mappable_changed(therm1) # update colorbar range
 
-    ax.draw_artist(therm1) # draw new thermal image
+    ax.draw_artist(therm1) # draw new thermal image   
     fig.canvas.blit(ax.bbox) # draw background
     fig.canvas.flush_events() # show the new image
-    return
+    
+    #np.save('/home/Pi/Desktop/Test_Video_Cam/test.npy', data_array)
+    img_list.append(np.array(therm1))
+    np.save('/home/Pi/Desktop/Test_Video_Cam/test%s/%s.npy', img_list)
+    
+    return img_list
+    #return data_array
 
 t_array = []
 while True:
     t1 = time.monotonic() # for determining frame rate
     try:
-        plot_update() # update plot
+        plot_update(img_list) # update plot
     except:
         continue
     # approximating frame rate
