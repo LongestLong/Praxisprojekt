@@ -54,9 +54,12 @@ def plot_update(img_list):
     fig.canvas.blit(ax.bbox) # draw background
     fig.canvas.flush_events() # show the new image
     
+    ########################################################################
+    
     #np.save('/home/Pi/Desktop/Test_Video_Cam/test.npy', data_array)
     img_list.append(np.array(therm1))
-    np.save('/home/Pi/Desktop/Test_Video_Cam/test%s/%s.npy', img_list)
+    
+    ########################################################################
     
     return img_list
     #return data_array
@@ -66,6 +69,13 @@ while True:
     t1 = time.monotonic() # for determining frame rate
     try:
         plot_update(img_list) # update plot
+        
+        #####################################################################
+        
+        np.save('/home/Pi/Desktop/Test_Video_Cam/test%s/%s.npy', img_list)
+        
+        #####################################################################
+        
     except:
         continue
     # approximating frame rate
