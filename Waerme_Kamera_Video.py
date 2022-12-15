@@ -41,7 +41,7 @@ fig.show() # show the figure before blitting
 
 frame = np.zeros(mlx_shape[0]*mlx_shape[1]) # 768 pts
 
-def plot_update(img_list):
+def plot_update():
     fig.canvas.restore_region(ax_background) # restore background
     mlx.getFrame(frame) # read mlx90640
     data_array = np.fliplr(np.reshape(frame,mlx_shape)) # reshape, flip data
@@ -57,22 +57,23 @@ def plot_update(img_list):
     ########################################################################
     
     #np.save('/home/Pi/Desktop/Test_Video_Cam/test.npy', data_array)
-    img_list.append(np.array(therm1))
+    #img_list.append(np.array(therm1))
     
     ########################################################################
     
-    return img_list
+    return therm1
     #return data_array
 
 t_array = []
 while True:
     t1 = time.monotonic() # for determining frame rate
     try:
-        plot_update(img_list) # update plot
+        plot_update() # update plot
         
         #####################################################################
         
-        np.save('/home/Pi/Desktop/Test_Video_Cam/test%s/%s.npy', img_list)
+        img_list.append(np.array(therm1))
+        np.save('/home/Pi/Desktop/Test_Video_Cam/test.npy', img_list)
         
         #####################################################################
         
